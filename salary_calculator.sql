@@ -1,24 +1,26 @@
 
-PROCEDURE get_money_exchange
-(
-SALARY IN number,
-d_turkish_lira OUT number
-)
+SET SERVEROUTPUT ON
+CREATE OR REPLACE PROCEDURE finding_rich(pis_id OUT HR.EMPLOYEES.EMPLOYEE_ID % TYPE,
+                                    pis_name OUT HR.EMPLOYEES.FIRST_NAME % TYPE,
+                                    pis_salary OUT HR.EMPLOYEES.SALARY % TYPE)
 IS
 BEGIN
-select * from (
-  select employee_id,first_name,last_name,salary as maxsalary, row_number() over (order by salary desc) rn from hr.employees e
-)
-where rn = 1; 
+SELECT EMPLOYEE_ID,FIRST_NAME,SALARY INTO pis_id,pis_name,pis_salary
+FROM HR.EMPLOYEES
+WHERE SALARY=(SELECT MAX(SALARY) FROM HR.EMPLOYEES);
+    DBMS_OUTPUT.PUT_LINE('Name of Richest Employee  in Company =>>'||pis_name );
+    DBMS_OUTPUT.PUT_LINE('Salary of Richest Employee  in Company =>> '||pis_salary );
+    DBMS_OUTPUT.PUT_LINE('salary of Richest Employee  in Company=>> '|| 5*pis_salary );
 END;
-SET SERVEROUTPUT ON;
-DECLARE
-d_salary number:=maxsalary;
-d_turkish_lira number:=maxsalary*5;
-BEGIN
-get_money_exchange(d_salary, d_turkish_lira);
-dbms_output.put_line('Turkish Lira version is'||d_turkish_lira);
-END;
-
 /
+
+DECLARE pis_id HR.EMPLOYEES.EMPLOYEE_ID % TYPE;
+        pis_name HR.EMPLOYEES.FIRST_NAME % TYPE;
+        pis_salary HR.EMPLOYEES.SALARY % TYPE;
+        
+        BEGIN
+        finding_rich(pis_id,pis_name,pis_salary);
+        END;
+        /
+
 
